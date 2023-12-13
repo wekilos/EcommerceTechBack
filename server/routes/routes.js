@@ -20,6 +20,7 @@ const UserFavoritesControllers = require("../controller/userFavoritesController"
 const ParametrControllers = require("../controller/parametrController");
 const ProductParametrControllers = require("../controller/productParametrController");
 const MarketControllers = require("../controller/marketController");
+const CompareControllers = require("../controller/compareController");
 
 // For Token
 
@@ -312,5 +313,19 @@ router.get("/market/:id", cache.get, MarketControllers.getOne, cache.set);
 router.post("/market/create", verifyToken, MarketControllers.create);
 router.patch("/market/update", verifyToken, MarketControllers.update);
 router.delete("/market/destroy/:id", verifyToken, MarketControllers.Destroy);
+
+// Compare Config Routes
+
+router.get("/compare/all", cache.get, CompareControllers.getAll, cache.set);
+router.get("/compare/:id", cache.get, CompareControllers.getOne, cache.set);
+router.post("/compare/create", verifyToken, CompareControllers.create);
+router.post("/compare/addPro", verifyToken, CompareControllers.addPro);
+router.delete(
+  "/compare/removePro/:id",
+  verifyToken,
+  CompareControllers.removePro
+);
+router.patch("/compare/update", verifyToken, CompareControllers.update);
+router.delete("/compare/destroy/:id", verifyToken, CompareControllers.Destroy);
 
 module.exports = router;

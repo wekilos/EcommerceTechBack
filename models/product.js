@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       Product.belongsTo(models.Category);
       Product.belongsTo(models.Brand);
       Product.hasMany(models.ProductParametr);
+      Product.hasMany(models.ComparePro);
     }
   }
   Product.init(
