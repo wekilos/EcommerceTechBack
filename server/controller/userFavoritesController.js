@@ -1,15 +1,43 @@
 var Sequelize = require("sequelize");
-const { FavProduct, User, Product } = require("../../models");
+const {
+  FavProduct,
+  User,
+  Product,
+  ProductImg,
+  ProductVideo,
+  ProductParametr,
+  ProductParametrItem,
+  Parametr,
+} = require("../../models/index.js");
 const Op = Sequelize.Op;
 const fs = require("fs");
 
 const getAll = async (req, res) => {
-  const { type } = req.query;
-  const Type = type && type ? { type: type } : null;
+  const { type, UserId } = req.query;
   FavProduct.findAll({
-    include: [{ model: User }, { model: Product }],
+    include: [
+      { model: User },
+      {
+        model: Product,
+        include: [
+          { model: ProductImg },
+          { model: ProductVideo },
+          {
+            model: ProductParametr,
+            include: [
+              {
+                model: Parametr,
+              },
+              {
+                model: ProductParametrItem,
+              },
+            ],
+          },
+        ],
+      },
+    ],
     order: [["id", "DESC"]],
-    where: { Type },
+    where: { UserId: UserId },
   })
     .then((data) => {
       res.json(data);
@@ -25,7 +53,27 @@ const getOne = async (req, res) => {
   const data = await FavProduct.findOne({ where: { id: id } });
   if (data) {
     FavProduct.findOne({
-      include: [{ model: User }, { model: Product }],
+      include: [
+        { model: User },
+        {
+          model: Product,
+          include: [
+            { model: ProductImg },
+            { model: ProductVideo },
+            {
+              model: ProductParametr,
+              include: [
+                {
+                  model: Parametr,
+                },
+                {
+                  model: ProductParametrItem,
+                },
+              ],
+            },
+          ],
+        },
+      ],
       where: {
         id: id,
       },
@@ -44,15 +92,20 @@ const getOne = async (req, res) => {
 
 const create = async (req, res) => {
   const { UserId, ProductId } = req.body;
-
-  FavProduct.create({ UserId, ProductId })
-    .then(async (data) => {
-      res.json(data);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.json("create FavProduct:", err);
-    });
+  const favPro = await FavProduct.findOne({
+    where: { [Op.and]: [{ UserId: UserId }, { ProductId: ProductId }] },
+  });
+  if (favPro) {
+  } else {
+    FavProduct.create({ UserId, ProductId })
+      .then(async (data) => {
+        res.json(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.json("create FavProduct:", err);
+      });
+  }
 };
 
 const update = async (req, res) => {

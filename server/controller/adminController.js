@@ -1,5 +1,5 @@
 var Sequelize = require("sequelize");
-const { Admin, UserVerification } = require("../../models");
+const { Admin, UserVerification } = require("../../models/index.js");
 var sequelize = require("../../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");

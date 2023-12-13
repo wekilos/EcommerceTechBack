@@ -12,6 +12,9 @@ module.exports = {
       name_tm: { allowNull: false, defaultValue: "", type: Sequelize.STRING },
       name_ru: { allowNull: false, defaultValue: "", type: Sequelize.STRING },
       name_en: { allowNull: false, defaultValue: "", type: Sequelize.STRING },
+      color_tm: { allowNull: false, defaultValue: "", type: Sequelize.STRING },
+      color_ru: { allowNull: false, defaultValue: "", type: Sequelize.STRING },
+      color_en: { allowNull: false, defaultValue: "", type: Sequelize.STRING },
       description_tm: {
         allowNull: false,
         defaultValue: "",

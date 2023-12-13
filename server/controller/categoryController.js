@@ -1,6 +1,14 @@
 var Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const { Category, Product } = require("../../models");
+const {
+  Category,
+  Product,
+  ProductImg,
+  ProductVideo,
+  ProductParametr,
+  Parametr,
+  ProductParametrItem,
+} = require("../../models/index.js");
 
 const fs = require("fs");
 
@@ -64,6 +72,25 @@ const getAll = async (req, res) => {
     include: [
       {
         model: Product,
+        include: [
+          {
+            model: ProductImg,
+          },
+          {
+            model: ProductVideo,
+          },
+          {
+            model: ProductParametr,
+            include: [
+              {
+                model: Parametr,
+              },
+              {
+                model: ProductParametrItem,
+              },
+            ],
+          },
+        ],
       },
     ],
 

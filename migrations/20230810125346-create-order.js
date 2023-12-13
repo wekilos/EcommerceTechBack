@@ -28,7 +28,7 @@ module.exports = {
       code: {
         allowNull: false,
         defaultValue: Sequelize.UUIDV4,
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
       },
       address: { allowNull: false, defaultValue: "", type: Sequelize.STRING },
       note: { allowNull: false, defaultValue: "", type: Sequelize.STRING },

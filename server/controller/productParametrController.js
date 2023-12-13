@@ -5,7 +5,7 @@ const {
   Product,
   ProductParametrItem,
   ProductParametr,
-} = require("../../models");
+} = require("../../models/index.js");
 
 const fs = require("fs");
 

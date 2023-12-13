@@ -13,7 +13,8 @@ const {
   Category,
   Brand,
   Orderlog,
-} = require("../../models");
+  Market,
+} = require("../../models/index.js");
 
 const fs = require("fs");
 const orderlog = require("../../models/orderlog");
@@ -129,7 +130,7 @@ const getAll = async (req, res) => {
 };
 const getOne = async (req, res) => {
   const { id } = req.params;
-  const data = await Product.findOne({ where: { id: id } });
+  const data = await Order.findOne({ where: { id: id } });
   if (data) {
     Order.findOne({
       include: [
@@ -181,7 +182,7 @@ const getOne = async (req, res) => {
         res.json({ error: err });
       });
   } else {
-    res.send("BU ID boyuncha Product yok!");
+    res.send("BU ID boyuncha Order yok!");
   }
 };
 
@@ -194,25 +195,36 @@ const create = async (req, res) => {
     note,
     admin_note,
     delivery_type,
+    delivery_price,
     UserId,
     orderProduct,
   } = req.body;
 
+  const market = await Market.findOne();
   let orderedProducts = [];
-  let price = 0;
-  let discount_price = 0;
+  var price = 0;
+  var discount_price = 0;
+  console.log("price>>>>>>", price, "\n", "discount >>>>>>>", discount_price);
   await orderProduct?.map(async (item) => {
     const product = await Product.findOne({ where: { id: item.ProductId } });
 
     let proPrice = product?.is_valyuta
-      ? (product?.usd_price * 19.4 * item?.quantity).toFixed(2)
-      : (product?.price * item?.quantity).toFixed(2);
-    price = price + proPrice;
+      ? (product?.usd_price * market?.valyuta * item?.quantity).toFixed(0)
+      : (product?.price * item?.quantity).toFixed(0);
+    price = +price + +proPrice;
 
     let proDiscount_price = product?.is_valyuta
-      ? (product?.usd_price_discount * 19.4 * item?.quantity).toFixed(2)
-      : (product?.discount_price * item?.quantity).toFixed(2);
-    discount_price = discount_price + proDiscount_price;
+      ? product?.is_discount
+        ? (
+            product?.usd_price_discount *
+            market?.valyuta *
+            item?.quantity
+          ).toFixed(0)
+        : 0
+      : product?.is_discount
+      ? (product?.discount_price * item?.quantity).toFixed(0)
+      : 0;
+    discount_price = +discount_price + +proDiscount_price;
 
     orderedProducts.push({
       quantity: item?.quantity,
@@ -221,26 +233,46 @@ const create = async (req, res) => {
       ProductId: product?.id,
       OrderId: 0,
     });
-  });
 
-  Order.create({
-    price: price,
-    discount_price: discount_price,
-    delivery_price: 0,
-    sum_price: price - discount_price,
+    console.log(
+      "2price>>>>>>",
+      price,
+      "\n",
+      "2discount >>>>>>>",
+      discount_price
+    );
+  });
+  console.log("3price>>>>>>", price, "\n", "3discount >>>>>>>", discount_price);
+  await Order.create({
+    price: +price,
+    discount_price: +discount_price,
+    sum_price: +price - (+price - +discount_price) + market.dastavka,
     name,
     lastname,
     phone,
     address,
     note,
     admin_note,
+    delivery_price: market?.dastavka,
     delivery_type,
+    code: Math.floor(Math.random() * 9000000000) + 1000000000,
     UserId,
   })
     .then(async (data) => {
       await orderedProducts?.map(async (item) => {
         item.OrderId = data.id;
       });
+      await Order.update(
+        {
+          price: +price,
+          discount_price: +discount_price,
+        },
+        {
+          where: {
+            id: data.id,
+          },
+        }
+      );
       await editStock(orderedProducts);
       OrderProduct.bulkCreate(orderedProducts, { returning: true })
         .then(async (ordered) => {

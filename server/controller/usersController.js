@@ -1,5 +1,9 @@
 var Sequelize = require("sequelize");
-const { User, UserAddress, UserVerification } = require("../../models");
+const {
+  User,
+  UserAddress,
+  UserVerification,
+} = require("../../models/index.js");
 var sequelize = require("../../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -9,7 +13,7 @@ const fs = require("fs");
 
 const axios = require("axios");
 
-const BASE_URL = "http://119.235.118.211:6415";
+const BASE_URL = "http://localhost:6415";
 
 const getAll = async (req, res) => {
   const { active, deleted, name } = req.query;
@@ -82,19 +86,16 @@ const create = async (req, res) => {
   });
 
   const verification = await UserVerification.findOne({
-    where: { phone: phone },
+    where: { phonenumber: phone },
   });
   if (!verification) {
-    res.json("Telefon belgiňiz nädogry!");
-  } else {
-    if (verification.code != code) {
-      res.json("Siziň tassyklaýyş kodyňyz nädogry!");
-    }
-  }
-
-  if (exist) {
+    res.json({ login: false, msg: "Telefon belgiňiz nädogry!" });
+  } else if (verification.code != code) {
+    res.json({ login: false, msg: "Siziň tassyklaýyş kodyňyz nädogry!" });
+  } else if (exist) {
     let text = "Bu nomur-da ulanyjy bar!";
     res.json({
+      login: false,
       msg: text,
     });
   } else {
@@ -453,16 +454,18 @@ const Destroy = async (req, res) => {
 const sendCode = async (req, res) => {
   const { phone, code } = req.body;
   await UserVerification.destroy({
-    where: { phone: phone },
+    where: { phonenumber: phone },
   });
+
+  const Code = code ? code : Math.floor(Math.random() * 90000) + 10000;
   UserVerification.create({
-    phone: phone,
-    code: code,
+    phonenumber: phone,
+    code: Code,
   })
     .then(async (data) => {
       await axios
         .post(BASE_URL + "/send-code", {
-          code: "Siziň tassyklaýyş kodyňyz: " + code,
+          code: "Siziň tassyklaýyş kodyňyz: " + Code,
           phone: "+" + phone,
         })
         .then((data) => {
@@ -481,7 +484,7 @@ const checkCode = async (req, res) => {
   const { code, phone } = req.body;
 
   const verification = await UserVerification.findOne({
-    where: { phone: phone },
+    where: { phonenumber: phone },
   });
   if (!verification) {
     res.json("Telefon belgiňiz nädogry!");

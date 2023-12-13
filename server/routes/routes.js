@@ -19,6 +19,7 @@ const BannerControllers = require("../controller/bannerController");
 const UserFavoritesControllers = require("../controller/userFavoritesController");
 const ParametrControllers = require("../controller/parametrController");
 const ProductParametrControllers = require("../controller/productParametrController");
+const MarketControllers = require("../controller/marketController");
 
 // For Token
 
@@ -170,24 +171,12 @@ router.patch("/product/unDelete/:id", verifyToken, ProductControllers.unDelete);
 router.delete("/product/destroy/:id", verifyToken, ProductControllers.Destroy);
 
 // Order Routes
-router.get(
-  "/order/all",
-  verifyToken,
-  cache.get,
-  OrderControllers.getAll,
-  cache.set
-);
-router.get(
-  "/order/:id",
-  verifyToken,
-  cache.get,
-  OrderControllers.getOne,
-  cache.set
-);
-router.post("/order/create", verifyToken, OrderControllers.create);
+router.get("/order/all", cache.get, OrderControllers.getAll, cache.set);
+router.get("/order/:id", cache.get, OrderControllers.getOne, cache.set);
+router.post("/order/create", OrderControllers.create);
 router.patch("/order/update", verifyToken, OrderControllers.update);
-router.patch("/order/delete/:id", verifyToken, OrderControllers.Delete);
-router.patch("/order/unDelete/:id", verifyToken, OrderControllers.unDelete);
+router.patch("/order/delete/:id", OrderControllers.Delete);
+router.patch("/order/unDelete/:id", OrderControllers.unDelete);
 router.delete("/order/destroy/:id", verifyToken, OrderControllers.Destroy);
 
 // Banner Routes
@@ -200,12 +189,14 @@ router.delete("/banner/destroy/:id", verifyToken, BannerControllers.Destroy);
 // User Favorites Routes
 router.get(
   "/favorite/all",
+  // verifyToken,
   cache.get,
   UserFavoritesControllers.getAll,
   cache.set
 );
 router.get(
   "/favorite/:id",
+  verifyToken,
   cache.get,
   UserFavoritesControllers.getOne,
   cache.set
@@ -313,4 +304,13 @@ router.delete(
   verifyToken,
   ProductParametrControllers.DestroyPP
 );
+
+// Market Config Routes
+
+router.get("/market/all", cache.get, MarketControllers.getAll, cache.set);
+router.get("/market/:id", cache.get, MarketControllers.getOne, cache.set);
+router.post("/market/create", verifyToken, MarketControllers.create);
+router.patch("/market/update", verifyToken, MarketControllers.update);
+router.delete("/market/destroy/:id", verifyToken, MarketControllers.Destroy);
+
 module.exports = router;

@@ -9,7 +9,7 @@ const {
   ProductParametr,
   ProductParametrItem,
   Parametr,
-} = require("../../models");
+} = require("../../models/index.js");
 
 const fs = require("fs");
 
@@ -19,7 +19,9 @@ const getAll = async (req, res) => {
     active,
     deleted,
     CategoryId,
+    CategoryIds,
     BrandId,
+    BrandIds,
     is_discount,
     is_moresale,
     is_valyuta,
@@ -28,23 +30,42 @@ const getAll = async (req, res) => {
     order,
     startPrice,
     endPrice,
+    limit,
+    page,
   } = req.query;
 
+  const Page = page ? page : 0;
+  const Limit = limit ? limit : 10;
+  const Ofset = Page * Limit;
+  const CategoryIdS =
+    CategoryIds &&
+    CategoryIds?.filter((item) => {
+      return item != "0";
+    });
+  console.log("====>>>>>>>>>>>>>>>>", CategoryIds, CategoryIdS, name);
+  const CategoryIDs =
+    CategoryIdS && CategoryIdS.length > 0
+      ? { CategoryId: { [Op.in]: CategoryIdS } }
+      : null;
+  const BrandIDs =
+    BrandIds && BrandIds.length > 0 ? { BrandId: { [Op.in]: BrandIds } } : null;
   const Title =
-    name &&
-    (name?.length > 0
+    name?.length > 0
       ? {
           [Op.or]: [
             { name_tm: { [Op.iLike]: `%${name}%` } },
             { name_ru: { [Op.iLike]: `%${name}%` } },
             { name_en: { [Op.iLike]: `%${name}%` } },
+            { color_tm: { [Op.iLike]: `%${name}%` } },
+            { color_ru: { [Op.iLike]: `%${name}%` } },
+            { color_en: { [Op.iLike]: `%${name}%` } },
             { description_tm: { [Op.iLike]: `%${name}%` } },
             { description_ru: { [Op.iLike]: `%${name}%` } },
             { description_en: { [Op.iLike]: `%${name}%` } },
             { bar_code: { [Op.iLike]: `%${name}%` } },
           ],
         }
-      : null);
+      : null;
 
   const Active =
     active &&
@@ -182,9 +203,13 @@ const getAll = async (req, res) => {
         Is_Selected,
         StartPrice,
         EndPrice,
+        CategoryIDs,
+        BrandIDs,
       ],
     },
     order: [Order],
+    offset: Ofset,
+    limit: Limit,
   })
     .then((data) => {
       res.json(data);
@@ -245,6 +270,9 @@ const create = async (req, res) => {
     name_tm,
     name_ru,
     name_en,
+    color_tm,
+    color_ru,
+    color_en,
     description_ru,
     description_tm,
     description_en,
@@ -299,6 +327,9 @@ const create = async (req, res) => {
     name_tm,
     name_ru,
     name_en,
+    color_tm,
+    color_ru,
+    color_en,
     description_ru,
     description_tm,
     description_en,
@@ -306,8 +337,8 @@ const create = async (req, res) => {
     price,
     discount_price,
     is_discount,
-    usd_price,
-    usd_price_discount,
+    usd_price: price,
+    usd_price_discount: discount_price,
     is_valyuta,
     discount,
     stock,
@@ -351,6 +382,9 @@ const update = async (req, res) => {
     name_tm,
     name_ru,
     name_en,
+    color_tm,
+    color_ru,
+    color_en,
     description_ru,
     description_tm,
     description_en,
@@ -382,6 +416,9 @@ const update = async (req, res) => {
         name_tm,
         name_ru,
         name_en,
+        color_tm,
+        color_ru,
+        color_en,
         description_ru,
         description_tm,
         description_en,
@@ -389,8 +426,8 @@ const update = async (req, res) => {
         price,
         discount_price,
         is_discount,
-        usd_price,
-        usd_price_discount,
+        usd_price: price,
+        usd_price_discount: discount_price,
         is_valyuta,
         discount,
         stock,
@@ -524,13 +561,17 @@ const unDelete = async (req, res) => {
   const { id } = req.params;
   let data = await Product.findOne({ where: { id } });
   if (data) {
-    Product.update({
-      deleted: false,
-      active: true,
-      where: {
-        id,
+    Product.update(
+      {
+        deleted: false,
+        active: true,
       },
-    })
+      {
+        where: {
+          id,
+        },
+      }
+    )
       .then(() => {
         res.json("undeleted!");
       })
@@ -547,13 +588,17 @@ const Delete = async (req, res) => {
   const { id } = req.params;
   let data = await Product.findOne({ where: { id } });
   if (data) {
-    Product.update({
-      deleted: true,
-      active: false,
-      where: {
-        id,
+    Product.update(
+      {
+        deleted: true,
+        active: false,
       },
-    })
+      {
+        where: {
+          id,
+        },
+      }
+    )
       .then(() => {
         res.json("deleted!");
       })

@@ -1,6 +1,6 @@
 var Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const { User, UserAddress } = require("../../models");
+const { User, UserAddress } = require("../../models/index.js");
 var sequelize = require("../../config/db");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");

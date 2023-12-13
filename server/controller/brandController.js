@@ -1,6 +1,6 @@
 var Sequelize = require("sequelize");
 const Op = Sequelize.Op;
-const { Brand, Product } = require("../../models");
+const { Brand, Product } = require("../../models/index.js");
 
 const fs = require("fs");
 
