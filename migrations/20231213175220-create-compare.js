@@ -10,6 +10,8 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       orderNum: {
+        allowNull: false,
+        autoIncrement: true,
         type: Sequelize.INTEGER,
       },
       name_tm: { allowNull: false, defaultValue: "", type: Sequelize.STRING },

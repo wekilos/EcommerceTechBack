@@ -16,7 +16,7 @@ const {
 const fs = require("fs");
 
 const getAll = async (req, res) => {
-  Compare.findAll({
+  await Compare.findAll({
     include: [
       {
         model: ComparePro,
@@ -32,9 +32,6 @@ const getAll = async (req, res) => {
               },
               {
                 model: Category,
-              },
-              {
-                model: Brand,
               },
               {
                 model: ProductParametr,
@@ -54,12 +51,77 @@ const getAll = async (req, res) => {
     ],
   })
     .then((data) => {
+      console.log("comparree >>>>>>>>>>>", data.data);
       res.json(data);
     })
     .catch((err) => {
       console.log(err);
       res.json({ error: err });
     });
+};
+
+const getAllByPro = async (req, res) => {
+  const { ProductId } = req.params;
+  const compro = await ComparePro.findOne({ where: ProductId });
+
+  if (compro) {
+    await Compare.findAll({
+      include: [
+        {
+          model: ComparePro,
+          include: [
+            {
+              model: Product,
+              include: [
+                {
+                  model: ProductImg,
+                },
+                {
+                  model: ProductVideo,
+                },
+                {
+                  model: Category,
+                },
+                {
+                  model: ProductParametr,
+                  include: [
+                    {
+                      model: Parametr,
+                    },
+                    {
+                      model: ProductParametrItem,
+                      // attributes: [
+                      //   "id",
+                      //   "name_tm",
+                      //   "name_ru",
+                      //   "name_en",
+                      //   "value_tm",
+                      //   "value_ru",
+                      //   "value_en",
+                      // ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      where: {
+        id: compro?.CompareId,
+      },
+    })
+      .then((data) => {
+        console.log("comparree >>>>>>>>>>>", data.data);
+        res.json(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.json({ error: err });
+      });
+  } else {
+    res.json([]);
+  }
 };
 
 const getOne = async (req, res) => {
@@ -138,7 +200,6 @@ const addPro = async (req, res) => {
     ComparePro.create({
       ProductId,
       CompareId,
-      orderNum,
     })
       .then(async (data) => {
         res.json(data);
@@ -227,3 +288,4 @@ exports.update = update;
 exports.Destroy = Destroy;
 exports.addPro = addPro;
 exports.removePro = removePro;
+exports.getAllByPro = getAllByPro;

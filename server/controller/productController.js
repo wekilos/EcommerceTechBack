@@ -222,7 +222,12 @@ const getAll = async (req, res) => {
 
 const getOne = async (req, res) => {
   const { id } = req.params;
-  const data = await Product.findOne({ where: { id: id } });
+  let data;
+  if (id) {
+    data = await Product.findOne({ where: { id: id } });
+  } else {
+    data = null;
+  }
   if (data) {
     Product.findOne({
       include: [

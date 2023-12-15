@@ -317,6 +317,12 @@ router.delete("/market/destroy/:id", verifyToken, MarketControllers.Destroy);
 // Compare Config Routes
 
 router.get("/compare/all", cache.get, CompareControllers.getAll, cache.set);
+router.get(
+  "/compare/allByPro",
+  cache.get,
+  CompareControllers.getAllByPro,
+  cache.set
+);
 router.get("/compare/:id", cache.get, CompareControllers.getOne, cache.set);
 router.post("/compare/create", verifyToken, CompareControllers.create);
 router.post("/compare/addPro", verifyToken, CompareControllers.addPro);
