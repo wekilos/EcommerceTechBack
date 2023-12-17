@@ -66,7 +66,7 @@ const getOne = async (req, res) => {
       },
     })
       .then((data) => {
-        res.json(data);
+        res.status(200).json(data);
       })
       .catch((err) => {
         console.log(err);

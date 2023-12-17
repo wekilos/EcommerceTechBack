@@ -185,7 +185,7 @@ const create = async (req, res) => {
     })
     .catch((err) => {
       console.log(err);
-      res.json("create Compare:", err);
+      res.status(200).json("create Compare:", err);
     });
 };
 
