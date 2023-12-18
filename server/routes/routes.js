@@ -21,6 +21,7 @@ const ParametrControllers = require("../controller/parametrController");
 const ProductParametrControllers = require("../controller/productParametrController");
 const MarketControllers = require("../controller/marketController");
 const CompareControllers = require("../controller/compareController");
+const PostControllers = require("../controller/postController");
 
 // For Token
 
@@ -313,6 +314,13 @@ router.get("/market/:id", cache.get, MarketControllers.getOne, cache.set);
 router.post("/market/create", verifyToken, MarketControllers.create);
 router.patch("/market/update", verifyToken, MarketControllers.update);
 router.delete("/market/destroy/:id", verifyToken, MarketControllers.Destroy);
+
+// Post Rotes
+router.get("/post/all", cache.get, PostControllers.getAll, cache.set);
+router.get("/post/:id", cache.get, PostControllers.getOne, cache.set);
+router.post("/post/create", PostControllers.create);
+router.patch("/post/update", verifyToken, PostControllers.update);
+router.delete("/post/destroy/:id", verifyToken, PostControllers.Destroy);
 
 // Compare Config Routes
 
