@@ -22,6 +22,12 @@ const ProductParametrControllers = require("../controller/productParametrControl
 const MarketControllers = require("../controller/marketController");
 const CompareControllers = require("../controller/compareController");
 const PostControllers = require("../controller/postController");
+const AboutControllers = require("../controller/aboutController");
+const DeliveryControllers = require("../controller/deliveryController");
+const OrderDescriptionControllers = require("../controller/orderDescriptionController");
+const PrivacyControllers = require("../controller/privacyController");
+const QuestionControllers = require("../controller/questionController");
+const UsingRulesControllers = require("../controller/usingRulesController");
 
 // For Token
 
@@ -321,6 +327,78 @@ router.get("/post/:id", cache.get, PostControllers.getOne, cache.set);
 router.post("/post/create", PostControllers.create);
 router.patch("/post/update", verifyToken, PostControllers.update);
 router.delete("/post/destroy/:id", verifyToken, PostControllers.Destroy);
+
+// About Rotes
+router.get("/about/all", cache.get, AboutControllers.getAll, cache.set);
+router.get("/about/:id", cache.get, AboutControllers.getOne, cache.set);
+router.post("/about/create", AboutControllers.create);
+router.patch("/about/update", verifyToken, AboutControllers.update);
+router.delete("/about/destroy/:id", verifyToken, AboutControllers.Destroy);
+
+// Delivery Rotes
+router.get("/delivery/all", cache.get, DeliveryControllers.getAll, cache.set);
+router.get("/delivery/:id", cache.get, DeliveryControllers.getOne, cache.set);
+router.post("/delivery/create", DeliveryControllers.create);
+router.patch("/delivery/update", verifyToken, DeliveryControllers.update);
+router.delete(
+  "/delivery/destroy/:id",
+  verifyToken,
+  DeliveryControllers.Destroy
+);
+
+// OrderDescription Rotes
+router.get(
+  "/orderDesc/all",
+  cache.get,
+  OrderDescriptionControllers.getAll,
+  cache.set
+);
+router.get(
+  "/orderDesc/:id",
+  cache.get,
+  OrderDescriptionControllers.getOne,
+  cache.set
+);
+router.post("/orderDesc/create", OrderDescriptionControllers.create);
+router.patch(
+  "/orderDesc/update",
+  verifyToken,
+  OrderDescriptionControllers.update
+);
+router.delete(
+  "/orderDesc/destroy/:id",
+  verifyToken,
+  OrderDescriptionControllers.Destroy
+);
+
+// Privacy Rotes
+router.get("/privacy/all", cache.get, PrivacyControllers.getAll, cache.set);
+router.get("/privacy/:id", cache.get, PrivacyControllers.getOne, cache.set);
+router.post("/privacy/create", PrivacyControllers.create);
+router.patch("/privacy/update", verifyToken, PrivacyControllers.update);
+router.delete("/privacy/destroy/:id", verifyToken, PrivacyControllers.Destroy);
+
+// Question Rotes
+router.get("/question/all", cache.get, QuestionControllers.getAll, cache.set);
+router.get("/question/:id", cache.get, QuestionControllers.getOne, cache.set);
+router.post("/question/create", QuestionControllers.create);
+router.patch("/question/update", verifyToken, QuestionControllers.update);
+router.delete(
+  "/question/destroy/:id",
+  verifyToken,
+  QuestionControllers.Destroy
+);
+
+// Using Rules Rotes
+router.get("/useRule/all", cache.get, UsingRulesControllers.getAll, cache.set);
+router.get("/useRule/:id", cache.get, UsingRulesControllers.getOne, cache.set);
+router.post("/useRule/create", UsingRulesControllers.create);
+router.patch("/useRule/update", verifyToken, UsingRulesControllers.update);
+router.delete(
+  "/useRule/destroy/:id",
+  verifyToken,
+  UsingRulesControllers.Destroy
+);
 
 // Compare Config Routes
 
