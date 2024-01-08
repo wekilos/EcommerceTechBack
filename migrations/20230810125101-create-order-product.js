@@ -10,6 +10,7 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       quantity: { allowNull: false, defaultValue: 1, type: Sequelize.INTEGER },
+      came_price: { allowNull: false, defaultValue: 0, type: Sequelize.REAL },
       price: { allowNull: false, defaultValue: 0, type: Sequelize.REAL },
       discount_price: {
         allowNull: false,

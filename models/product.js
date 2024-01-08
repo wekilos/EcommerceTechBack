@@ -14,6 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       Product.belongsTo(models.Brand);
       Product.hasMany(models.ProductParametr);
       Product.hasMany(models.ComparePro);
+      Product.hasMany(models.OrderProduct);
     }
   }
   Product.init(
@@ -29,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       description_en: DataTypes.TEXT,
       bar_code: DataTypes.STRING,
       price: DataTypes.REAL,
+      came_price: DataTypes.REAL,
       discount_price: DataTypes.REAL,
       is_discount: DataTypes.BOOLEAN,
       usd_price: DataTypes.REAL,
@@ -36,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
       is_valyuta: DataTypes.BOOLEAN,
       discount: DataTypes.REAL,
       stock: DataTypes.INTEGER,
+      watch_count: DataTypes.INTEGER,
       is_moresale: DataTypes.BOOLEAN,
       is_new: DataTypes.BOOLEAN,
       is_selected: DataTypes.BOOLEAN,

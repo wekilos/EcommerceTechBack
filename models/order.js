@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       lastname: DataTypes.STRING,
       phone: DataTypes.STRING,
       price: DataTypes.REAL,
+      came_price: DataTypes.REAL,
       discount_price: DataTypes.REAL,
       delivery_price: DataTypes.REAL,
       sum_price: DataTypes.REAL,

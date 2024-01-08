@@ -99,8 +99,14 @@ const getAll = async (req, res) => {
     },
     order: [["orderNum", "ASC"]],
   })
-    .then((data) => {
-      res.json(data);
+    .then(async (data) => {
+      let array = data;
+      await array.map((item, i) => {
+        item = item?.Products?.filter((pro) => {
+          return pro.active == true;
+        });
+      });
+      res.json(array);
     })
     .catch((err) => {
       console.log(err);
@@ -113,7 +119,12 @@ const getOne = async (req, res) => {
   const data = await Category.findOne({ where: { id: id } });
   if (data) {
     Category.findOne({
-      include: [{ model: Product }],
+      include: [
+        {
+          model: Product,
+          where: { [Op.and]: [{ active: true }, { deleted: false }] },
+        },
+      ],
       where: {
         id: id,
       },

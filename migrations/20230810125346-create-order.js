@@ -13,6 +13,11 @@ module.exports = {
       lastname: { allowNull: false, defaultValue: "", type: Sequelize.STRING },
       phone: { allowNull: false, defaultValue: "", type: Sequelize.STRING },
       price: { allowNull: false, defaultValue: 0, type: Sequelize.REAL },
+      came_price: {
+        allowNull: false,
+        defaultValue: 0,
+        type: Sequelize.REAL,
+      },
       discount_price: {
         allowNull: false,
         defaultValue: 0,

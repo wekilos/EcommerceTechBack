@@ -155,6 +155,12 @@ router.delete("/brand/destroy/:id", verifyToken, BrandsControllers.Destroy);
 
 // Products Routes
 router.get("/product/all", cache.get, ProductControllers.getAll, cache.set);
+router.get(
+  "/product/hasabat",
+  cache.get,
+  ProductControllers.Hasabat,
+  cache.set
+);
 router.get("/product/:id", cache.get, ProductControllers.getOne, cache.set);
 router.post("/product/create", verifyToken, ProductControllers.create);
 router.post("/product/upl-img/:id", verifyToken, ProductControllers.uploadsImg);
@@ -180,6 +186,13 @@ router.delete("/product/destroy/:id", verifyToken, ProductControllers.Destroy);
 
 // Order Routes
 router.get("/order/all", cache.get, OrderControllers.getAll, cache.set);
+router.get("/order/hasabat", cache.get, OrderControllers.Hasabat, cache.set);
+router.get(
+  "/order/hasabat/user",
+  cache.get,
+  OrderControllers.HasabatUser,
+  cache.set
+);
 router.get("/order/:id", cache.get, OrderControllers.getOne, cache.set);
 router.post("/order/create", OrderControllers.create);
 router.patch("/order/update", verifyToken, OrderControllers.update);

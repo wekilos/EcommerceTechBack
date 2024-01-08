@@ -9,6 +9,7 @@ const {
   ProductParametr,
   ProductParametrItem,
   Parametr,
+  OrderProduct,
 } = require("../../models/index.js");
 
 const fs = require("fs");
@@ -150,7 +151,10 @@ const getAll = async (req, res) => {
       ? ["name_tm", "ASC"]
       : order == 4
       ? ["name_tm", "DESC"]
+      : order == 5
+      ? ["watch_count", "DESC"]
       : ["orderNum", "ASC"];
+
   const StartPrice = startPrice
     ? {
         price: { [Op.gte]: startPrice },
@@ -176,6 +180,9 @@ const getAll = async (req, res) => {
       },
       {
         model: Brand,
+      },
+      {
+        model: OrderProduct,
       },
       {
         model: ProductParametr,
@@ -225,6 +232,10 @@ const getOne = async (req, res) => {
   let data;
   if (id) {
     data = await Product.findOne({ where: { id: id } });
+    await Product.update(
+      { watch_count: data.watch_count + 1 },
+      { where: { id: id } }
+    );
   } else {
     data = null;
   }
@@ -282,6 +293,7 @@ const create = async (req, res) => {
     description_tm,
     description_en,
     bar_code,
+    came_price,
     price,
     discount_price,
     is_discount,
@@ -339,6 +351,7 @@ const create = async (req, res) => {
     description_tm,
     description_en,
     bar_code,
+    came_price,
     price,
     discount_price,
     is_discount,
@@ -395,6 +408,7 @@ const update = async (req, res) => {
     description_en,
     bar_code,
     price,
+    came_price,
     discount_price,
     is_discount,
     usd_price,
@@ -428,6 +442,7 @@ const update = async (req, res) => {
         description_tm,
         description_en,
         bar_code,
+        came_price,
         price,
         discount_price,
         is_discount,
@@ -639,6 +654,205 @@ const Destroy = async (req, res) => {
     res.json("Bu Id Boyuncha Product yok!");
   }
 };
+
+const Hasabat = async (req, res) => {
+  const { name, CategoryId, BrandId, limit, page } = req.query;
+
+  const Page = page ? page : 0;
+  const Limit = limit ? limit : 10;
+  const Ofset = Page * Limit;
+
+  OrderProduct.findAll({
+    // include: [
+    //   {
+    //     model: Product,
+    //     include: [
+    //       {
+    //         model: ProductImg,
+    //       },
+    //       {
+    //         model: ProductVideo,
+    //       },
+    //       {
+    //         model: Category,
+    //       },
+    //       {
+    //         model: Brand,
+    //       },
+    //       {
+    //         model: OrderProduct,
+    //       },
+    //       {
+    //         model: ProductParametr,
+    //         include: [
+    //           {
+    //             model: Parametr,
+    //           },
+    //           {
+    //             model: ProductParametrItem,
+    //           },
+    //         ],
+    //       },
+    //     ],
+    //   },
+    // ],
+    // include: [
+    //   {
+    //     model: Product,
+    //     attributes: [],
+    //   },
+    // ],
+    attributes: [
+      // "id",
+      "ProductId",
+      // "OrderId",
+      [Sequelize.fn("sum", Sequelize.col("quantity")), "quantity_sum"],
+      [Sequelize.fn("sum", Sequelize.col("came_price")), "came_price_sum"],
+      [Sequelize.fn("sum", Sequelize.col("price")), "price_sum"],
+      [
+        Sequelize.fn("sum", Sequelize.col("discount_price")),
+        "discount_price_sum",
+      ],
+    ],
+    group: "ProductId",
+    raw: true,
+    // offset: Ofset,
+    // limit: Limit,
+  })
+    .then(async (data) => {
+      let array = [];
+      await data.map(async (item) => {
+        let pro = await Product.findOne({
+          include: [
+            {
+              model: Category,
+            },
+
+            {
+              model: Brand,
+            },
+            {
+              model: ProductImg,
+            },
+            { model: ProductVideo },
+            {
+              model: ProductParametr,
+              include: [
+                {
+                  model: Parametr,
+                },
+                {
+                  model: ProductParametrItem,
+                },
+              ],
+            },
+          ],
+          where: {
+            id: item?.ProductId,
+          },
+        });
+        let obj = {
+          ProductId: item?.ProductId,
+          came_price_sum: item?.came_price_sum,
+          discount_price_sum: item?.discount_price_sum,
+          price_sum: item?.price_sum,
+          quantity_sum: item?.quantity_sum,
+          Product: pro,
+        };
+        array.push(obj);
+        console.log("obj:::::::::", obj);
+        if (array?.length == data?.length) {
+          await array.sort((a, b) => b.quantity_sum - a.quantity_sum);
+          res.json(array);
+        }
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json({ error: err });
+    });
+};
+
+const HasabatUser = async (req, res) => {
+  const { name, CategoryId, BrandId, limit, page } = req.query;
+
+  const Page = page ? page : 0;
+  const Limit = limit ? limit : 10;
+  const Ofset = Page * Limit;
+
+  OrderProduct.findAll({
+    attributes: [
+      // "id",
+      "OrderId",
+      // "OrderId",
+      [Sequelize.fn("sum", Sequelize.col("quantity")), "quantity_sum"],
+      [Sequelize.fn("sum", Sequelize.col("came_price")), "came_price_sum"],
+      [Sequelize.fn("sum", Sequelize.col("price")), "price_sum"],
+      [
+        Sequelize.fn("sum", Sequelize.col("discount_price")),
+        "discount_price_sum",
+      ],
+    ],
+    group: "OrderId",
+    raw: true,
+    // offset: Ofset,
+    // limit: Limit,
+  })
+    .then(async (data) => {
+      let array = [];
+      await data.map(async (item) => {
+        let pro = await Product.findOne({
+          include: [
+            {
+              model: Category,
+            },
+
+            {
+              model: Brand,
+            },
+            {
+              model: ProductImg,
+            },
+            { model: ProductVideo },
+            {
+              model: ProductParametr,
+              include: [
+                {
+                  model: Parametr,
+                },
+                {
+                  model: ProductParametrItem,
+                },
+              ],
+            },
+          ],
+          where: {
+            id: item?.ProductId,
+          },
+        });
+        let obj = {
+          ProductId: item?.ProductId,
+          came_price_sum: item?.came_price_sum,
+          discount_price_sum: item?.discount_price_sum,
+          price_sum: item?.price_sum,
+          quantity_sum: item?.quantity_sum,
+          Product: pro,
+        };
+        array.push(obj);
+        console.log("obj:::::::::", obj);
+        if (array?.length == data?.length) {
+          await array.sort((a, b) => b.quantity_sum - a.quantity_sum);
+          res.json(array);
+        }
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json({ error: err });
+    });
+};
+
+exports.Hasabat = Hasabat;
 exports.getAll = getAll;
 exports.getOne = getOne;
 exports.create = create;

@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       quantity: DataTypes.INTEGER,
       price: DataTypes.REAL,
+      came_price: DataTypes.REAL,
       discount_price: DataTypes.REAL,
       orderNum: DataTypes.INTEGER,
       active: DataTypes.BOOLEAN,

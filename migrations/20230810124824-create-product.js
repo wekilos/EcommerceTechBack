@@ -32,6 +32,7 @@ module.exports = {
       },
       bar_code: { allowNull: false, defaultValue: "", type: Sequelize.STRING },
       price: { allowNull: false, defaultValue: 0, type: Sequelize.REAL },
+      came_price: { allowNull: false, defaultValue: 0, type: Sequelize.REAL },
       discount_price: {
         allowNull: false,
         defaultValue: 0,
@@ -55,6 +56,11 @@ module.exports = {
       },
       discount: { allowNull: false, defaultValue: 0, type: Sequelize.REAL },
       stock: { allowNull: false, defaultValue: 0, type: Sequelize.INTEGER },
+      watch_count: {
+        allowNull: false,
+        defaultValue: 0,
+        type: Sequelize.INTEGER,
+      },
       is_moresale: {
         allowNull: false,
         defaultValue: false,
